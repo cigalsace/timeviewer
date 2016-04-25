@@ -1190,7 +1190,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
         }
         $.getScript(qsconfig)
             .done(function() {
-                console.log('config ok');
                 // transmits config name for persistency
                 customConfig['customConfigName'] = qs.c;
                 doConfiguration();
@@ -1199,7 +1198,6 @@ ol.extent.getTopRight(extent).reverse().join(" "),
                 // doTimeBox();
             })
             .fail(function() {
-                console.log('config nok');
                 doConfiguration();
                 doMap();
                 doGUI();
@@ -1451,7 +1449,7 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     /**
      * show TimeBox
      */
-    // helper function to get date from index in timeLayerDates array
+    // Helper function to format date before display in select menu
     // GRK - 151126
     function formatTimeLayerDate(date) {
         d = date.split('-');
@@ -1460,43 +1458,41 @@ ol.extent.getTopRight(extent).reverse().join(" "),
     // Bind timeSlider and timeInput
     // GRK - 151126
     function showTimeBox() {
-        // console.log(timeLayerDates);
-        
+        // Init var
         var timeLayerSource = map.getLayers().item(map.getLayers().getArray().length-1).getSource();
         var minValue = 0;
         var maxValue = timeLayerDates.length-1;
         var initValue = maxValue;
-        $('#timeInput').html(formatTimeLayerDate(timeLayerDates[initValue]));
+        
+        // Initi select date
+        var timeInputSelect = $('#timeInputSelect');
+        $.each(timeLayerDates, function(index, date) {
+            timeInputSelect.children('option:first').clone().val(date).html(formatTimeLayerDate(date)).appendTo('#timeInputSelect');
+        });
+        timeInputSelect.children('option:first').remove();
+        timeInputSelect.val(timeLayerDates[initValue]).attr('selected', true);
+        timeInputSelect.selectmenu( "refresh" );
+
+        // init slider
         $("#timeSlider").attr("min", minValue);
         $("#timeSlider").attr("max", maxValue);
         $("#timeSlider").attr("value", initValue);
         $("#timeSlider").slider("refresh");
         $("#timeSlider").on('change', function() {
-            //var slider_value = $("#slider-1").val();
             var index = $('#timeSlider').val();
-            $('#timeInput').val(formatTimeLayerDate(timeLayerDates[index]));
+            timeInputSelect.val(timeLayerDates[index]).attr('selected', true).siblings('option').removeAttr('selected');
+            timeInputSelect.selectmenu( "refresh" );
             timeLayerSource.updateParams({'TIME': timeLayerDates[index]});
-            // console.log(formatTimeLayerDate(timeLayerDates, index));
-            // console.log(index + ' - ' + formatTimeLayerDate(timeLayerDates, index) + ' - '+ timeLayerDates[index]);
-            //$('#timeSliderBox a.ui-slider-handle').html(formatTimeLayerDate(timeLayerDates, index));
         });
         $('#timeBox').show();
         
-        $(document).on('submit', '#timeInputBox', function (e) {
-            e.preventDefault();
-            var inputDate = $('#timeInput').html().split('/');
-            console.log($('#timeInput').val());
-            isoDate = inputDate[2]+'-'+inputDate[1]+'-'+inputDate[0];
-            //var i = timeLayerDates.indexOf(d);
-            timeLayerSource.updateParams({'TIME': isoDate});
-            $("#timeSlider").val(timeLayerDates.indexOf(isoDate));
-            console.log(timeLayerDates);
-            console.log(isoDate);
+        timeInputSelect.on('change', function () {
+            inputDate = $(this).val();
+            timeLayerSource.updateParams({'TIME': inputDate});
+            $("#timeSlider").val(timeLayerDates.indexOf(inputDate));
             $("#timeSlider").slider("refresh");
-            return false;
         });
-        
-        
+                
     }
 
     // ------ Main ------------------------------------------------------------------------------------------

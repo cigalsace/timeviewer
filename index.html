@@ -157,9 +157,15 @@ $(document).bind("mobileinit", function(){
           <div id="timeSliderBox">
             <input name="timeSlider" id="timeSlider" data-highlight="true" step="1" _max="100" _min="0" _value="40" type="range" _data-show-value="true" _data-popup-enabled="true" _data-mini="true">
           </div>
-          <form id="timeInputBox" data-ajax="false" method="POST">
+          <!--<form id="timeInputBox" data-ajax="false" method="POST">
             <input name="timeInput" id="timeInput" type="text" data-mini="true" value="" _data-role="date">
-          </form>
+          </form>-->
+          <div id="timeInputBox">
+            <!--<label id="timeInputLabel" for="timeInputSelect" class="select" data-mini="true"></label>-->
+            <select id="timeInputSelect" name="timeInputSelect" data-native-menu="false" data-mini="true">
+                <option></option>
+            </select>
+          </div>
       </div>
       <!-- end page -->
     </div>
